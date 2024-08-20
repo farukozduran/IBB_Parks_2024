@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Threading.Tasks;
 
 namespace IBB.Nesine.Data
 {
@@ -46,7 +45,7 @@ namespace IBB.Nesine.Data
                 throw new Exception("No Stored Procedure name given");
             }
 
-            return new CommandDefinition(storedProcName,null,null, commandType: CommandType.StoredProcedure);
+            return new CommandDefinition(storedProcName, null, null, commandType: CommandType.StoredProcedure);
         }
 
         public IEnumerable<T> Query<T>(string storedProcName, object parameters)

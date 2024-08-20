@@ -1,14 +1,9 @@
 ﻿using IBB.Nesine.Data;
 using IBB.Nesine.Services.Helpers;
-using IBB.Nesine.Services.Interfaces;
 using IBB.Nesine.Services.Models;
-using Newtonsoft.Json;
 using Quartz;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace IBB.Nesine.Services.Services
@@ -34,7 +29,7 @@ namespace IBB.Nesine.Services.Services
             {
                 foreach (int parkId in parkIds)
                 {
-                    
+
                     string url = $"{apiUrl}{parkId}";
                     var data = await _apiServiceHelper.GetAsync<List<EmptyCapacityResponseModel>>(url);
 

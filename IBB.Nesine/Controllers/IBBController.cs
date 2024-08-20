@@ -1,6 +1,4 @@
 ﻿using IBB.Nesine.Services.Interfaces;
-using IBB.Nesine.Services.Models;
-using IBB.Nesine.Services.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IBB.Nesine.API.Controllers

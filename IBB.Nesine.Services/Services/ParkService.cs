@@ -1,7 +1,6 @@
 ﻿using IBB.Nesine.Data;
 using IBB.Nesine.Services.Interfaces;
 using IBB.Nesine.Services.Models;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 

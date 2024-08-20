@@ -52,7 +52,7 @@ namespace IBB.Nesine.Services.Services
                 Console.WriteLine(ex.Message);
                 throw;
             }
-            
+
             return true;
         }
 

@@ -1,11 +1,7 @@
-﻿using Quartz.Impl;
+﻿using IBB.Nesine.Services.Services;
 using Quartz;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Quartz.Impl;
 using System.Threading.Tasks;
-using IBB.Nesine.Services.Services;
 
 namespace IBB.Nesine.Services.Schedules
 {
