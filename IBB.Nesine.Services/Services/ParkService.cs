@@ -16,7 +16,6 @@ namespace IBB.Nesine.Services.Services
             _dbProvider = dbProvider;
         }
 
-        [HttpGet("GetParkByDistrict")]
         public List<GetParksByDistrictResponseModel> GetParksByDistrict(string district)
         {
             return _dbProvider.Query<GetParksByDistrictResponseModel>("[dbo].[usp_GetParkByDistrict]", new { District = district }).ToList();

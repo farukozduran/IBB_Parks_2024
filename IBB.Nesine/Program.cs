@@ -1,7 +1,9 @@
 using IBB.Nesine.Data;
 using IBB.Nesine.Services.Helpers;
 using IBB.Nesine.Services.Interfaces;
+using IBB.Nesine.Services.Schedules;
 using IBB.Nesine.Services.Services;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,15 +12,31 @@ var configuration = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 
+builder.Services.AddQuartz(q =>
+{
+    q.UseMicrosoftDependencyInjectionJobFactory();
+    q.ScheduleJob<SetIsAvailableJobService>(trigger =>
+        trigger
+            .StartNow()
+            .WithSimpleSchedule(x => x
+                .WithIntervalInMinutes(2)
+                .RepeatForever()));
+});
+
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
+await SetIsAvailableJobSchedule.Start();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IConfiguration>(configuration);
 builder.Services.AddHttpClient<ApiServiceHelper>();
 
-builder.Services.AddSingleton<IIBBService, IBBService>(); 
+builder.Services.AddSingleton<IIBBService, IBBService>();
 builder.Services.AddSingleton<IParkService, ParkService>();
 builder.Services.AddSingleton<IDbProvider, DbProvider>();
+builder.Services.AddSingleton<IJob, SetIsAvailableJobService>();
 
 var app = builder.Build();
 

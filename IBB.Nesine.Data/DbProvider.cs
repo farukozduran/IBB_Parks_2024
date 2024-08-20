@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace IBB.Nesine.Data
 {
@@ -38,12 +39,26 @@ namespace IBB.Nesine.Data
             return new CommandDefinition(storedProcName, parameters, null, commandType: CommandType.StoredProcedure);
         }
 
+        private CommandDefinition GetCommandDefinition(string storedProcName)
+        {
+            if (string.IsNullOrWhiteSpace(storedProcName))
+            {
+                throw new Exception("No Stored Procedure name given");
+            }
+
+            return new CommandDefinition(storedProcName,null,null, commandType: CommandType.StoredProcedure);
+        }
+
         public IEnumerable<T> Query<T>(string storedProcName, object parameters)
         {
             using IDbConnection cnn = GetDbConnection();
             return cnn.Query<T>(GetCommandDefinition(storedProcName, parameters));
         }
-
+        public IEnumerable<T> Query<T>(string storedProcName)
+        {
+            using IDbConnection cnn = GetDbConnection();
+            return cnn.Query<T>(GetCommandDefinition(storedProcName));
+        }
         public int Execute(string storedProcName, object parameters)
         {
             using IDbConnection cnn = GetDbConnection();
