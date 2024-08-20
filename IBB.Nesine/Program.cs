@@ -37,6 +37,7 @@ builder.Services.AddSingleton<IIBBService, IBBService>();
 builder.Services.AddSingleton<IParkService, ParkService>();
 builder.Services.AddSingleton<IDbProvider, DbProvider>();
 builder.Services.AddSingleton<IJob, SetIsAvailableJobService>();
+builder.Services.AddSingleton<IParkAvailabilityService, ParkAvailabilityService>();
 
 var app = builder.Build();
 

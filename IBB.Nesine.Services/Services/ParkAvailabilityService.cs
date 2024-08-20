@@ -13,9 +13,18 @@ namespace IBB.Nesine.Services.Services
             _dbProvider = dbProvider;
         }
 
-        public async Task<bool> GetParkAvailability(int parkId)
+        public bool GetParkAvailability(int parkId)
         {
-            var isAvailable = _dbProvider.Execute("usp_GetParkAvailabilityById", new {ParkId = parkId});
+            var isAvailable = _dbProvider.Execute("usp_GetParkAvailabilityById", new { ParkId = parkId });
+
+            if (isAvailable == 0)
+            {
+                return false;
+            }
+            else 
+            {
+                return true;
+            }
         }
     }
 }
