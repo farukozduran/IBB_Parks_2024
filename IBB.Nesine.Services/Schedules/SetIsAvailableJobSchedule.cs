@@ -17,7 +17,7 @@ namespace IBB.Nesine.Services.Schedules
 
             ITrigger trigger = TriggerBuilder.Create()
             .WithSimpleSchedule(x => x
-                .WithIntervalInMinutes(2)
+                .WithIntervalInMinutes(10)
                 .RepeatForever())
             .Build();
 

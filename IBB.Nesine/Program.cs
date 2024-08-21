@@ -19,7 +19,7 @@ builder.Services.AddQuartz(q =>
         trigger
             .StartNow()
             .WithSimpleSchedule(x => x
-                .WithIntervalInMinutes(2)
+                .WithIntervalInMinutes(10)
                 .RepeatForever()));
 });
 

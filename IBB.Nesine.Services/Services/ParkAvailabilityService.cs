@@ -1,5 +1,6 @@
 ﻿using IBB.Nesine.Data;
 using IBB.Nesine.Services.Interfaces;
+using IBB.Nesine.Services.Models;
 using System.Threading.Tasks;
 
 namespace IBB.Nesine.Services.Services
@@ -15,16 +16,9 @@ namespace IBB.Nesine.Services.Services
 
         public bool GetParkAvailability(int parkId)
         {
-            var isAvailable = _dbProvider.Execute("usp_GetParkAvailabilityById", new { ParkId = parkId });
+            var isAvailable = _dbProvider.QuerySingle<GetParkAvailabilityModel>("usp_GetParkAvailabilityById", new { ParkId = parkId });
 
-            if (isAvailable == 0)
-            {
-                return false;
-            }
-            else 
-            {
-                return true;
-            }
+            return isAvailable.IsAvailable == 0 ? false : true;
         }
     }
 }

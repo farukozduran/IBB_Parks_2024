@@ -64,6 +64,12 @@ namespace IBB.Nesine.Data
             return cnn.Execute(GetCommandDefinition(storedProcName, parameters));
         }
 
+        public T QuerySingle<T>(string storedProcName, object parameters)
+        {
+            using IDbConnection cnn = GetDbConnection();
+            return cnn.QuerySingle<T>(storedProcName, parameters);
+        }
+
         public void Dispose()
         {
             throw new NotImplementedException();
