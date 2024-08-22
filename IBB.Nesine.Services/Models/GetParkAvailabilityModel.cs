@@ -8,6 +8,6 @@ namespace IBB.Nesine.Services.Models
 {
     public class GetParkAvailabilityModel
     {
-        public int IsAvailable { get; set; }
+        public bool IsAvailable { get; set; }
     }
 }

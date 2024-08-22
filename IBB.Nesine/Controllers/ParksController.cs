@@ -1,5 +1,6 @@
 ﻿using IBB.Nesine.Services.Interfaces;
 using IBB.Nesine.Services.Models;
+using IBB.Nesine.Services.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IBB.Nesine.API.Controllers
@@ -19,6 +20,12 @@ namespace IBB.Nesine.API.Controllers
         public ActionResult<List<GetParksByDistrictResponseModel>> GetParkByDistrict(string district)
         {
             return Ok(_parkService.GetParksByDistrict(district));
+        }
+
+        [HttpGet("GetParkAvailabilityByParkId")]
+        public ActionResult<bool> GetParkAvailabilityByParkId(int parkId)
+        {
+            return Ok(_parkService.GetParkAvailabilityByParkId(parkId));
         }
     }
 }

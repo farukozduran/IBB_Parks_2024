@@ -13,7 +13,7 @@ namespace IBB.Nesine.Services.Schedules
             IScheduler scheduler = await schedulerFactory.GetScheduler();
             await scheduler.Start();
 
-            IJobDetail job = JobBuilder.Create<SetIsAvailableJobService>().Build();
+            IJobDetail job = JobBuilder.Create<ParkService>().Build();
 
             ITrigger trigger = TriggerBuilder.Create()
             .WithSimpleSchedule(x => x

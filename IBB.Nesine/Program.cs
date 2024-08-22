@@ -15,7 +15,7 @@ var configuration = new ConfigurationBuilder()
 builder.Services.AddQuartz(q =>
 {
     q.UseMicrosoftDependencyInjectionJobFactory();
-    q.ScheduleJob<SetIsAvailableJobService>(trigger =>
+    q.ScheduleJob<ParkService>(trigger =>
         trigger
             .StartNow()
             .WithSimpleSchedule(x => x
@@ -36,8 +36,7 @@ builder.Services.AddHttpClient<ApiServiceHelper>();
 builder.Services.AddSingleton<IIBBService, IBBService>();
 builder.Services.AddSingleton<IParkService, ParkService>();
 builder.Services.AddSingleton<IDbProvider, DbProvider>();
-builder.Services.AddSingleton<IJob, SetIsAvailableJobService>();
-builder.Services.AddSingleton<IParkAvailabilityService, ParkAvailabilityService>();
+builder.Services.AddSingleton<IJob, ParkService>();
 
 var app = builder.Build();
 
