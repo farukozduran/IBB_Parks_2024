@@ -33,7 +33,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IConfiguration>(configuration);
 builder.Services.AddHttpClient<ApiServiceHelper>();
 
-builder.Services.AddSingleton<IIBBService, IBBService>();
 builder.Services.AddSingleton<IParkService, ParkService>();
 builder.Services.AddSingleton<IDbProvider, DbProvider>();
 builder.Services.AddSingleton<IJob, ParkService>();

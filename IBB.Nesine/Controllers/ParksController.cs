@@ -16,6 +16,12 @@ namespace IBB.Nesine.API.Controllers
             _parkService = parkService;
         }
 
+        [HttpPost("UpdateParksInfo")]
+        public async Task<bool> UpdateParksInfoAsync()
+        {
+            return await _parkService.UpdateParksInfoAsync();
+        }
+
         [HttpGet("GetParkByDistrict")]
         public ActionResult<List<GetParksByDistrictResponseModel>> GetParkByDistrict(string district)
         {

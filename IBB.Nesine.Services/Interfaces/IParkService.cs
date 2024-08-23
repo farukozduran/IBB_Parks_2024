@@ -1,5 +1,6 @@
 ﻿using IBB.Nesine.Services.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace IBB.Nesine.Services.Interfaces
 {
@@ -7,6 +8,8 @@ namespace IBB.Nesine.Services.Interfaces
     {
         List<GetParksByDistrictResponseModel> GetParksByDistrict(string district);
         bool GetParkAvailabilityByParkId(int parkId);
+        Task<bool> UpdateParksInfoAsync();
+
 
     }
 }

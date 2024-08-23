@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Z.Dapper.Plus;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -68,6 +69,12 @@ namespace IBB.Nesine.Data
         {
             using IDbConnection cnn = GetDbConnection();
             return cnn.QuerySingle<T>(storedProcName, parameters);
+        }
+
+        public void BulkInsert<T>(params T[] items) 
+        {
+            using IDbConnection cnn = GetDbConnection();
+            cnn.BulkInsert<T>(items);
         }
 
         public void Dispose()

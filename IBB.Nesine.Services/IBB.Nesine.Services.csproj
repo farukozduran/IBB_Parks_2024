@@ -8,6 +8,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Quartz" Version="3.13.0" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.13.0" />
+    <PackageReference Include="Z.Dapper.Plus" Version="7.5.2" />
   </ItemGroup>
 
   <ItemGroup>
