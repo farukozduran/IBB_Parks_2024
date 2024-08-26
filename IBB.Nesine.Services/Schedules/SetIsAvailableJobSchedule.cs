@@ -1,4 +1,4 @@
-﻿using IBB.Nesine.Services.Services;
+﻿using IBB.Nesine.Services.Jobs;
 using Quartz;
 using Quartz.Impl;
 using System.Threading.Tasks;
@@ -13,7 +13,7 @@ namespace IBB.Nesine.Services.Schedules
             IScheduler scheduler = await schedulerFactory.GetScheduler();
             await scheduler.Start();
 
-            IJobDetail job = JobBuilder.Create<ParkService>().Build();
+            IJobDetail job = JobBuilder.Create<UpdateAvailableParksInfoJob>().Build();
 
             ITrigger trigger = TriggerBuilder.Create()
             .WithSimpleSchedule(x => x

@@ -1,6 +1,7 @@
 using IBB.Nesine.Data;
 using IBB.Nesine.Services.Helpers;
 using IBB.Nesine.Services.Interfaces;
+using IBB.Nesine.Services.Jobs;
 using IBB.Nesine.Services.Schedules;
 using IBB.Nesine.Services.Services;
 using Quartz;
@@ -15,7 +16,7 @@ var configuration = new ConfigurationBuilder()
 builder.Services.AddQuartz(q =>
 {
     q.UseMicrosoftDependencyInjectionJobFactory();
-    q.ScheduleJob<ParkService>(trigger =>
+    q.ScheduleJob<UpdateAvailableParksInfoJob>(trigger =>
         trigger
             .StartNow()
             .WithSimpleSchedule(x => x
@@ -35,7 +36,7 @@ builder.Services.AddHttpClient<ApiServiceHelper>();
 
 builder.Services.AddSingleton<IParkService, ParkService>();
 builder.Services.AddSingleton<IDbProvider, DbProvider>();
-builder.Services.AddSingleton<IJob, ParkService>();
+builder.Services.AddSingleton<IJob, UpdateAvailableParksInfoJob>();
 
 var app = builder.Build();
 
