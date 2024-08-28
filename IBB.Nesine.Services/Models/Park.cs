@@ -13,5 +13,6 @@
         public int FreeTime { get; set; }
         public string District { get; set; }
         public int IsOpen { get; set; }
+
     }
 }

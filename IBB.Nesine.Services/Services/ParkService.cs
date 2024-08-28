@@ -3,7 +3,9 @@ using IBB.Nesine.Services.Helpers;
 using IBB.Nesine.Services.Interfaces;
 using IBB.Nesine.Services.Models;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -33,22 +35,15 @@ namespace IBB.Nesine.Services.Services
         public async Task<bool> UpdateParksInfoAsync()
         {
             List<Park> data = await _apiServiceHelper.GetAsync<List<Park>>(_parkListUrl);
+            int batchSize = 50;
+            if (!data.Any()) return false;
 
-            if (data.Any()) return false;
-
-            var existingParkIds = _dbProvider.Query<int>("usp_SelectParksByParkId").ToList();
-
-            var parksToInsert = data.Where(p => !existingParkIds.Contains(p.ParkId)).ToList();
-
-            if (parksToInsert.Any())
+            for (int i = 0; i < data.Count; i += batchSize)
             {
-                _dbProvider.BulkInsert(parksToInsert);
+                List<Park> parkBatch = data.GetRange(i, Math.Min(batchSize, data.Count - i));
+                DataTable parksDataTable = DataTableHelper.ToDataTable(parkBatch);
+                _dbProvider.Execute("usp_BulkInsertOrUpdateParks", new { parksTable = parksDataTable });
             }
-            else
-            {
-                return false; // eğer aynı parkId'de park varsa update date eklemesi gerekiyor.
-            }
-
             return true;
         }
     }

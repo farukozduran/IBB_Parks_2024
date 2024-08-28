@@ -8,6 +8,5 @@ namespace IBB.Nesine.Data
         public IEnumerable<T> Query<T>(string storedProcName);
         public int Execute(string storedProcName, object parameters);
         public T QuerySingle<T>(string storedProcName, object parameters);
-        public void BulkInsert<T>(params T[] items);
     }
 }

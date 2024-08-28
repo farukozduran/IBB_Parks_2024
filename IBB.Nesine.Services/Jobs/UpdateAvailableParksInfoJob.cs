@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Quartz;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,7 +27,8 @@ namespace IBB.Nesine.Services.Jobs
         public async Task Execute(IJobExecutionContext context)
         {
             var parkIds = _dbProvider.Query<int>("usp_SelectParksByParkId");
-
+            int batchSize = 50;
+            List<UpdateAvailableInfoModel> updateList = new();
             try
             {
                 string url = string.Empty;
@@ -35,7 +37,13 @@ namespace IBB.Nesine.Services.Jobs
                     Console.WriteLine(parkId);
                     url = $"{_parkDetailUrl}{parkId}";
                     var data = await _apiServiceHelper.GetAsync<List<EmptyCapacityResponseModel>>(url);
-                    _dbProvider.Execute("usp_SetIsAvailable", new { IsAvailable = data.First().EmptyCapacity > 0, ParkId = parkId });
+                    updateList.Add(new UpdateAvailableInfoModel { IsAvailable = data.First().EmptyCapacity > 0, ParkId = parkId });
+                    if (updateList.Count == batchSize)
+                    {
+                        DataTable dt = DataTableHelper.ToDataTable(updateList);
+                        _dbProvider.Execute("usp_SetIsAvailable", new { updateAvailableInfoTable = dt });
+                        updateList.Clear();
+                    }
                 }
             }
             catch (Exception ex)
