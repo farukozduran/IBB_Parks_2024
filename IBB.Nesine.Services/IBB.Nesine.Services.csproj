@@ -5,13 +5,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.33" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="NLog.Database" Version="5.3.4" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="5.3.13" />
+    <PackageReference Include="NLog.OutputDebugString" Version="5.3.4" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.13" />
     <PackageReference Include="Quartz" Version="3.13.0" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.13.0" />
-    <PackageReference Include="Z.Dapper.Plus" Version="7.5.2" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.16" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IBB.Nesine.Caching\IBB.Nesine.Caching.csproj" />
     <ProjectReference Include="..\IBB.Nesine.Data\IBB.Nesine.Data.csproj" />
   </ItemGroup>
 

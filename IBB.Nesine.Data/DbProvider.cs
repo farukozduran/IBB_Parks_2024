@@ -48,6 +48,16 @@ namespace IBB.Nesine.Data
             return new CommandDefinition(storedProcName, null, null, commandType: CommandType.StoredProcedure);
         }
 
+        private CommandDefinition GetCommandDefinitionSql(string sql, object parameters)
+        {
+            if (string.IsNullOrWhiteSpace(sql))
+            {
+                throw new Exception("No SQL query given");
+            }
+
+            return new CommandDefinition(sql, parameters, null, commandType: CommandType.Text);
+        }
+       
         public IEnumerable<T> Query<T>(string storedProcName, object parameters)
         {
             using IDbConnection cnn = GetDbConnection();
@@ -58,18 +68,26 @@ namespace IBB.Nesine.Data
             using IDbConnection cnn = GetDbConnection();
             return cnn.Query<T>(GetCommandDefinition(storedProcName));
         }
-        public int Execute(string storedProcName, object parameters)
-        {
-            using IDbConnection cnn = GetDbConnection();
-            return cnn.Execute(GetCommandDefinition(storedProcName, parameters));
-        }
-
         public T QuerySingle<T>(string storedProcName, object parameters)
         {
             using IDbConnection cnn = GetDbConnection();
             return cnn.QuerySingle<T>(storedProcName, parameters);
         }
-
+        public int Execute(string storedProcName, object parameters)
+        {
+            using IDbConnection cnn = GetDbConnection();
+            return cnn.Execute(GetCommandDefinition(storedProcName, parameters));
+        }
+        public int ExecuteSql(string sql, object parameters)
+        {
+            using IDbConnection cnn = GetDbConnection();
+            return cnn.Execute(GetCommandDefinitionSql(sql, parameters));
+        }
+        public T ExecuteScalarAsync<T>(string sql, object parameters)
+        {
+            using IDbConnection cnn = GetDbConnection();
+            return cnn.ExecuteScalar<T>(GetCommandDefinitionSql(sql, parameters));
+        }
         public void Dispose()
         {
             throw new NotImplementedException();
