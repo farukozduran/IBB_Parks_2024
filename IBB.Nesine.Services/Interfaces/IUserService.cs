@@ -9,7 +9,8 @@ namespace IBB.Nesine.Services.Interfaces
 {
     public interface IUserService
     {
-        public Task<string> AddUser(UserModel user);
+        public Task<string> Register(UserModel user);
+        public bool CheckLoginInfo(UserModel user);
 
     }
 }

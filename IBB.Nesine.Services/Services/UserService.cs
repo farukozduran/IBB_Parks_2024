@@ -12,7 +12,7 @@ namespace IBB.Nesine.Services.Services
         {
             _dbProvider = dbProvider;
         }
-        public async Task<string> AddUser(UserModel user)
+        public async Task<string> Register(UserModel user)
         {
             string checkUserSql = "SELECT COUNT(1) FROM Users WHERE UserName = @UserName";
             var userExists =  _dbProvider.ExecuteScalarAsync<bool>(checkUserSql, new { user.UserName });
@@ -27,6 +27,17 @@ namespace IBB.Nesine.Services.Services
                 _dbProvider.ExecuteSql(sql, new { user.UserName, user.Password });
                 return "User created successfully";
             }
+        }
+        public bool CheckLoginInfo(UserModel user)
+        {
+            string sql = "SELECT Password FROM Users WHERE UserName = @UserName";
+            var password = _dbProvider.ExecuteScalarAsync<string>(sql, new { user.UserName });
+
+            if ((password != user.Password))
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

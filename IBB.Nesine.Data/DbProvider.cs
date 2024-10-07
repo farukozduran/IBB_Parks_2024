@@ -57,7 +57,16 @@ namespace IBB.Nesine.Data
 
             return new CommandDefinition(sql, parameters, null, commandType: CommandType.Text);
         }
-       
+        private CommandDefinition GetCommandDefinitionSql(string sql)
+        {
+            if (string.IsNullOrWhiteSpace(sql))
+            {
+                throw new Exception("No SQL query given");
+            }
+
+            return new CommandDefinition(sql, null, commandType: CommandType.Text);
+        }
+
         public IEnumerable<T> Query<T>(string storedProcName, object parameters)
         {
             using IDbConnection cnn = GetDbConnection();
@@ -68,6 +77,11 @@ namespace IBB.Nesine.Data
             using IDbConnection cnn = GetDbConnection();
             return cnn.Query<T>(GetCommandDefinition(storedProcName));
         }
+        //public Task<IEnumerable<T>> QueryAsync<T>(string sql)
+        //{
+        //    using IDbConnection cnn = GetDbConnection();
+        //    return cnn.QueryAsync<T>(GetCommandDefinition(sql));
+        //}
         public T QuerySingle<T>(string storedProcName, object parameters)
         {
             using IDbConnection cnn = GetDbConnection();
@@ -77,6 +91,11 @@ namespace IBB.Nesine.Data
         {
             using IDbConnection cnn = GetDbConnection();
             return cnn.Execute(GetCommandDefinition(storedProcName, parameters));
+        }
+        public int Execute(string storedProcName)
+        {
+            using IDbConnection cnn = GetDbConnection();
+            return cnn.Execute(GetCommandDefinition(storedProcName));
         }
         public int ExecuteSql(string sql, object parameters)
         {

@@ -1,7 +1,10 @@
 ﻿using IBB.Nesine.Data;
+using IBB.Nesine.Services.Consumers;
 using IBB.Nesine.Services.Helpers;
 using IBB.Nesine.Services.Models;
+using IBB.Nesine.Services.Producers;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Quartz;
 using System;
 using System.Collections.Generic;
@@ -16,14 +19,25 @@ namespace IBB.Nesine.Services.Jobs
         private readonly IDbProvider _dbProvider;
         private readonly ApiServiceHelper _apiServiceHelper;
         private readonly string _parkDetailUrl;
-
-        public UpdateAvailableParksInfoJob(IDbProvider dbProvider, ApiServiceHelper apiServiceHelper, IConfiguration configuration)
+        private readonly string _updateAvailableParksInfoQueue;
+        private readonly RabbitMqProducer _rabbitMqProducer;
+        private readonly RabbitMqConsumer _rabbitMqConsumer;
+        private readonly UpdateAvailableParksInfoJobConsumer _updateAvailableParksInfoJobConsumer;
+        public UpdateAvailableParksInfoJob(IDbProvider dbProvider
+            , ApiServiceHelper apiServiceHelper
+            , IConfiguration configuration
+            , RabbitMqProducer rabbitMqProducer
+            , RabbitMqConsumer rabbitMqConsumer
+            , UpdateAvailableParksInfoJobConsumer updateAvailableParksInfoJobConsumer)
         {
             _dbProvider = dbProvider;
             _apiServiceHelper = apiServiceHelper;
             _parkDetailUrl = configuration.GetSection("ParkApiUrl:ParkDetail").Value;
+            _updateAvailableParksInfoQueue = configuration.GetSection("RabbitMqQueueSettings:UpdateAvailableParksInfoJob:QueueName").Value;
+            _rabbitMqProducer = rabbitMqProducer;
+            _rabbitMqConsumer = rabbitMqConsumer;
+            _updateAvailableParksInfoJobConsumer = updateAvailableParksInfoJobConsumer;
         }
-
         public async Task Execute(IJobExecutionContext context)
         {
             var parkIds = _dbProvider.Query<int>("usp_SelectParksByParkId");
@@ -38,10 +52,9 @@ namespace IBB.Nesine.Services.Jobs
                     url = $"{_parkDetailUrl}{parkId}";
                     var data = await _apiServiceHelper.GetAsync<List<EmptyCapacityResponseModel>>(url);
                     updateList.Add(new UpdateAvailableInfoModel { IsAvailable = data.First().EmptyCapacity > 0, ParkId = parkId });
-                    if (updateList.Count == batchSize)
+                    if (updateList.Count == batchSize || parkId == parkIds.Last())
                     {
-                        DataTable dt = DataTableHelper.ToDataTable(updateList);
-                        _dbProvider.Execute("usp_SetIsAvailable", new { updateAvailableInfoTable = dt });
+                        await ProcessUpdateListAsync(updateList);
                         updateList.Clear();
                     }
                 }
@@ -51,6 +64,12 @@ namespace IBB.Nesine.Services.Jobs
                 Console.WriteLine(ex.Message);
                 throw;
             }
+        }
+        async Task ProcessUpdateListAsync(List<UpdateAvailableInfoModel> updateList)
+        {
+            DataTable dt = DataTableHelper.ToDataTable(updateList);
+            var message = JsonConvert.SerializeObject(dt);
+            _rabbitMqProducer.Produce(_updateAvailableParksInfoQueue, message);
         }
     }
 }

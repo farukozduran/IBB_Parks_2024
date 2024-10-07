@@ -20,7 +20,10 @@ namespace IBB.Nesine.Services.Helpers
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<T>();
         }
+
+        public async Task<string> GetStringAsync(string url)
+        {
+            return await _httpClient.GetStringAsync(url);
+        }
     }
-
-
 }

@@ -1,7 +1,7 @@
 ﻿using IBB.Nesine.Services.Interfaces;
 using IBB.Nesine.Services.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace IBB.Nesine.API.Controllers
@@ -28,12 +28,17 @@ namespace IBB.Nesine.API.Controllers
         {
             return Ok(_parkService.GetParksByDistrict(district));
         }
-
         [Authorize]
         [HttpGet("GetParkAvailabilityByParkId")]
         public ActionResult<bool> GetParkAvailabilityByParkId(int parkId)
         {
             return Ok(_parkService.GetParkAvailabilityByParkId(parkId));
+        }
+
+        [HttpGet("GetAllParks")]
+        public ActionResult<List<Park>> GetAllParks()
+        {
+            return Ok(_parkService.GetParkList());
         }
     }
 }

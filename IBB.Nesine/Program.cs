@@ -13,8 +13,14 @@ using NLog.Targets;
 using NLog.Web;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using NLog.Config;
-using Microsoft.Extensions.Options;
-using IBB.Nesine.Caching;
+using IBB.Nesine.Caching.Interfaces;
+using IBB.Nesine.Caching.Providers;
+using StackExchange.Redis;
+using IBB.Nesine.Services.Consumers;
+using IBB.Nesine.Services.Queue;
+using IBB.Nesine.Services.Producers;
+using IBB.Nesine.Services.Schedules;
+using IBB.Nesine.Services.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 var configuration = new ConfigurationBuilder()
@@ -22,20 +28,23 @@ var configuration = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 
-//builder.Services.AddQuartz(q =>
-//{
-//    q.UseMicrosoftDependencyInjectionJobFactory();
-//    q.ScheduleJob<UpdateAvailableParksInfoJob>(trigger =>
-//        trigger
-//            //.StartNow()
-//            .WithSimpleSchedule(x => x
-//                .WithIntervalInMinutes(10)
-//                .RepeatForever()));
-//});
+var _rabbitMqQueueSettings = configuration.GetSection("RabbitMqQueueSettings");
+builder.Services.Configure<RabbitMqQueueSettings>(options => _rabbitMqQueueSettings.Bind(options));
 
-//builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+builder.Services.AddQuartz(q =>
+{
+    q.UseMicrosoftDependencyInjectionJobFactory();
+    q.ScheduleJob<UpdateAvailableParksInfoJob>(trigger =>
+        trigger
+            .StartNow()
+            .WithSimpleSchedule(x => x
+                .WithIntervalInMinutes(10)
+                .RepeatForever()));
+});
 
-//await SetIsAvailableJobSchedule.Start();
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
+await SetIsAvailableJobSchedule.Start();
 
 var logger = LogManager.Setup().LoadConfiguration(config => ConfigureNLog()).GetCurrentClassLogger();
 // create a logger
@@ -49,13 +58,22 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IConfiguration>(configuration);
 builder.Services.AddHttpClient<ApiServiceHelper>();
+builder.Services.AddScoped<TokenHelper>();
+//builder.Services.AddMemoryCache(); // Adding MemoryCache
 
+var redisConnection = ConnectionMultiplexer.Connect(builder.Configuration["ConnectionString:RedisConnection"]);
+builder.Services.AddSingleton<IConnectionMultiplexer>(redisConnection);
 builder.Services.AddSingleton<IParkService, ParkService>();
 builder.Services.AddSingleton<IUserService, UserService>();
-builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddSingleton<IDbProvider, DbProvider>();
 builder.Services.AddSingleton<IJob, UpdateAvailableParksInfoJob>();
-builder.Services.AddSingleton<ICacheProvider, RedisCacheProvider>();
+builder.Services.AddSingleton<RedisHelper>();
+builder.Services.AddSingleton<RabbitMqProducer>();
+builder.Services.AddSingleton<RabbitMqConsumer>();
+builder.Services.AddSingleton<UpdateParksInfoConsumer>();
+builder.Services.AddSingleton<UpdateAvailableParksInfoJobConsumer>();
+builder.Services.AddTransient<ICacheProvider, RedisCacheProvider>();
+//builder.Services.AddSingleton<ICacheProvider, MemoryCacheProvider>(); // adding MemoryCacheProvider with DI
 
 builder.Services.AddAuthentication(options =>
 {
@@ -121,7 +139,8 @@ var app = builder.Build();
 
 //    await next.Invoke();
 //});
-
+var scope = app.Services.CreateScope();
+scope.ServiceProvider.GetRequiredService<UpdateAvailableParksInfoJobConsumer>();
 
 
 // Configure the HTTP request pipeline.
@@ -152,7 +171,8 @@ void ConfigureNLog()
     databaseTarget.Parameters.Add(new DatabaseParameterInfo("@Exception", "${exception:format=tostring}"));
     var rule = new LoggingRule("*", NLog.LogLevel.Debug, databaseTarget);
     config.AddTarget(databaseTarget);
-    config.AddRuleForAllLevels(databaseTarget);
+    config.AddRuleForOneLevel(NLog.LogLevel.Debug,databaseTarget);
+    //config.AddRuleForAllLevels(databaseTarget);
     LogManager.Configuration = config;
 }
 
