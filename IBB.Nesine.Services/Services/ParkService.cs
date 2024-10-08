@@ -5,7 +5,6 @@ using IBB.Nesine.Services.Helpers;
 using IBB.Nesine.Services.Interfaces;
 using IBB.Nesine.Services.Models;
 using IBB.Nesine.Services.Producers;
-using IBB.Nesine.Services.Queue;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -19,34 +18,28 @@ namespace IBB.Nesine.Services.Services
 {
     public class ParkService : IParkService
     {
-        private readonly IDbProvider _dbProvider;
         private readonly ApiServiceHelper _apiServiceHelper;
         private readonly string _parkListUrl;
         private readonly string _updateParksQueue;
         private readonly ILogger<ParkService> _logger;
         private readonly RedisHelper _redisHelper;
         private readonly RabbitMqProducer _rabbitMqProducer;
-        private readonly RabbitMqConsumer _rabbitMqConsumer;
-        private readonly UpdateParksInfoConsumer _updateParksInfoConsumer;
 
-        public ParkService(IDbProvider dbProvider
-            , ApiServiceHelper apiServiceHelper
+        public ParkService
+            (
+              ApiServiceHelper apiServiceHelper
             , IConfiguration configuration
             , ILogger<ParkService> logger
             , RedisHelper redisHelper
             , RabbitMqProducer rabbitMqProducer
-            , RabbitMqConsumer rabbitMqConsumer
-            , UpdateParksInfoConsumer updateParksInfoConsumer)
+            )
         {
-            _dbProvider = dbProvider;
             _apiServiceHelper = apiServiceHelper;
             _parkListUrl = configuration.GetSection("ParkApiUrl:ParkList").Value;
             _updateParksQueue = configuration.GetSection("RabbitMqQueueSettings:UpdateParksQueue:QueueName").Value;
             _logger = logger;
             _redisHelper = redisHelper;
             _rabbitMqProducer = rabbitMqProducer;
-            _rabbitMqConsumer = rabbitMqConsumer;
-            _updateParksInfoConsumer = updateParksInfoConsumer;
         }
         public IEnumerable<GetParksByDistrictResponseModel> GetParksByDistrict(string district)
         {
@@ -72,9 +65,9 @@ namespace IBB.Nesine.Services.Services
                 List<Park> parkBatch = data.GetRange(i, Math.Min(batchSize, data.Count - i));
                 DataTable parksDataTable = DataTableHelper.ToDataTable(parkBatch);
                 var message = JsonConvert.SerializeObject(parksDataTable);
-                _logger.LogDebug("update parks before queue " + _updateParksQueue);
+                _logger.LogDebug($"update parks before queue {_updateParksQueue}");
                 _rabbitMqProducer.Produce(_updateParksQueue, message);
-                _logger.LogDebug("update parks after publish queue " + _updateParksQueue);
+                _logger.LogDebug($"update parks after publish queue {_updateParksQueue}");
             }
             return true;
         }

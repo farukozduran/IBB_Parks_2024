@@ -57,15 +57,6 @@ namespace IBB.Nesine.Data
 
             return new CommandDefinition(sql, parameters, null, commandType: CommandType.Text);
         }
-        private CommandDefinition GetCommandDefinitionSql(string sql)
-        {
-            if (string.IsNullOrWhiteSpace(sql))
-            {
-                throw new Exception("No SQL query given");
-            }
-
-            return new CommandDefinition(sql, null, commandType: CommandType.Text);
-        }
 
         public IEnumerable<T> Query<T>(string storedProcName, object parameters)
         {

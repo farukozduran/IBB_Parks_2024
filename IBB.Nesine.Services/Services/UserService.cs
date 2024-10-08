@@ -15,7 +15,7 @@ namespace IBB.Nesine.Services.Services
         public async Task<string> Register(UserModel user)
         {
             string checkUserSql = "SELECT COUNT(1) FROM Users WHERE UserName = @UserName";
-            var userExists =  _dbProvider.ExecuteScalarAsync<bool>(checkUserSql, new { user.UserName });
+            var userExists = _dbProvider.ExecuteScalarAsync<bool>(checkUserSql, new { user.UserName });
 
             if (userExists)
             {

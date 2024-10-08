@@ -21,22 +21,16 @@ namespace IBB.Nesine.Services.Jobs
         private readonly string _parkDetailUrl;
         private readonly string _updateAvailableParksInfoQueue;
         private readonly RabbitMqProducer _rabbitMqProducer;
-        private readonly RabbitMqConsumer _rabbitMqConsumer;
-        private readonly UpdateAvailableParksInfoJobConsumer _updateAvailableParksInfoJobConsumer;
         public UpdateAvailableParksInfoJob(IDbProvider dbProvider
             , ApiServiceHelper apiServiceHelper
             , IConfiguration configuration
-            , RabbitMqProducer rabbitMqProducer
-            , RabbitMqConsumer rabbitMqConsumer
-            , UpdateAvailableParksInfoJobConsumer updateAvailableParksInfoJobConsumer)
+            , RabbitMqProducer rabbitMqProducer)
         {
             _dbProvider = dbProvider;
             _apiServiceHelper = apiServiceHelper;
             _parkDetailUrl = configuration.GetSection("ParkApiUrl:ParkDetail").Value;
             _updateAvailableParksInfoQueue = configuration.GetSection("RabbitMqQueueSettings:UpdateAvailableParksInfoJob:QueueName").Value;
             _rabbitMqProducer = rabbitMqProducer;
-            _rabbitMqConsumer = rabbitMqConsumer;
-            _updateAvailableParksInfoJobConsumer = updateAvailableParksInfoJobConsumer;
         }
         public async Task Execute(IJobExecutionContext context)
         {

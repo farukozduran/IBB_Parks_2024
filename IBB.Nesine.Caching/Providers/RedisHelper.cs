@@ -7,7 +7,7 @@ namespace IBB.Nesine.Caching.Providers
     {
         private readonly IDbProvider _dbProvider;
 
-        public RedisHelper(IConnectionMultiplexer redisConnection, IDbProvider dbProvider): base(redisConnection)
+        public RedisHelper(IConnectionMultiplexer redisConnection, IDbProvider dbProvider) : base(redisConnection)
         {
             _dbProvider = dbProvider;
         }

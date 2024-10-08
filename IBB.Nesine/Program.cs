@@ -1,26 +1,27 @@
+using IBB.Nesine.API.Common.Models;
+using IBB.Nesine.Caching.Interfaces;
+using IBB.Nesine.Caching.Providers;
 using IBB.Nesine.Data;
+using IBB.Nesine.Services.Consumers;
 using IBB.Nesine.Services.Helpers;
 using IBB.Nesine.Services.Interfaces;
 using IBB.Nesine.Services.Jobs;
+using IBB.Nesine.Services.Producers;
+using IBB.Nesine.Services.Queue;
+using IBB.Nesine.Services.Schedules;
 using IBB.Nesine.Services.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Quartz;
-using System.Text;
 using NLog;
+using NLog.Config;
 using NLog.Targets;
 using NLog.Web;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
-using NLog.Config;
-using IBB.Nesine.Caching.Interfaces;
-using IBB.Nesine.Caching.Providers;
+using Quartz;
 using StackExchange.Redis;
-using IBB.Nesine.Services.Consumers;
-using IBB.Nesine.Services.Queue;
-using IBB.Nesine.Services.Producers;
-using IBB.Nesine.Services.Schedules;
-using IBB.Nesine.Services.Models;
+using System.Text;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 var builder = WebApplication.CreateBuilder(args);
 
 var configuration = new ConfigurationBuilder()
@@ -43,14 +44,17 @@ builder.Services.AddQuartz(q =>
 });
 
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
-
 await SetIsAvailableJobSchedule.Start();
+
+var cacheSettings = configuration.GetSection("CacheSettings").Get<CacheSettings>();
+
+
 
 var logger = LogManager.Setup().LoadConfiguration(config => ConfigureNLog()).GetCurrentClassLogger();
 // create a logger
 
 builder.Logging.ClearProviders();
-builder.Logging.SetMinimumLevel(LogLevel.Debug);
+builder.Logging.SetMinimumLevel(LogLevel.Debug); // Log Levels 0 - Trace, 1 - Debug, 2 - Information, 3 - Warning, 4 - Error, 5 - Critical, 6 - None,
 builder.Host.UseNLog();
 
 builder.Services.AddControllers();
@@ -59,7 +63,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IConfiguration>(configuration);
 builder.Services.AddHttpClient<ApiServiceHelper>();
 builder.Services.AddScoped<TokenHelper>();
-//builder.Services.AddMemoryCache(); // Adding MemoryCache
 
 var redisConnection = ConnectionMultiplexer.Connect(builder.Configuration["ConnectionString:RedisConnection"]);
 builder.Services.AddSingleton<IConnectionMultiplexer>(redisConnection);
@@ -72,8 +75,17 @@ builder.Services.AddSingleton<RabbitMqProducer>();
 builder.Services.AddSingleton<RabbitMqConsumer>();
 builder.Services.AddSingleton<UpdateParksInfoConsumer>();
 builder.Services.AddSingleton<UpdateAvailableParksInfoJobConsumer>();
-builder.Services.AddTransient<ICacheProvider, RedisCacheProvider>();
-//builder.Services.AddSingleton<ICacheProvider, MemoryCacheProvider>(); // adding MemoryCacheProvider with DI
+
+if (cacheSettings.IsRedisEnabled)
+{
+    builder.Services.AddTransient<ICacheProvider, RedisCacheProvider>();
+}
+
+if (cacheSettings.IsMemCacheEnabled)
+{
+    builder.Services.AddMemoryCache(); // Adding MemoryCache
+    builder.Services.AddSingleton<ICacheProvider, MemoryCacheProvider>(); // adding MemoryCacheProvider with DI
+}
 
 builder.Services.AddAuthentication(options =>
 {
@@ -125,25 +137,11 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-//builder.Services.AddAuthorization();
-
 var app = builder.Build();
 
-//app.Use(async (context, next) =>
-//{
-//    if (!context.User.Identity.IsAuthenticated && context.Request.Path.StartsWithSegments("/api"))
-//    {
-//        context.Response.Redirect("/api/Auth/Login");
-//        return;
-//    }
-
-//    await next.Invoke();
-//});
 var scope = app.Services.CreateScope();
 scope.ServiceProvider.GetRequiredService<UpdateAvailableParksInfoJobConsumer>();
 
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -171,7 +169,8 @@ void ConfigureNLog()
     databaseTarget.Parameters.Add(new DatabaseParameterInfo("@Exception", "${exception:format=tostring}"));
     var rule = new LoggingRule("*", NLog.LogLevel.Debug, databaseTarget);
     config.AddTarget(databaseTarget);
-    config.AddRuleForOneLevel(NLog.LogLevel.Debug,databaseTarget);
+    config.AddRuleForOneLevel(NLog.LogLevel.Debug, databaseTarget);
+    config.AddRuleForOneLevel(NLog.LogLevel.Warn, databaseTarget);
     //config.AddRuleForAllLevels(databaseTarget);
     LogManager.Configuration = config;
 }

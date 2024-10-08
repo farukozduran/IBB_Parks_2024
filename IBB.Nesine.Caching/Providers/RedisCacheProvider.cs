@@ -1,5 +1,4 @@
 ﻿using IBB.Nesine.Caching.Interfaces;
-using IBB.Nesine.Data;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 

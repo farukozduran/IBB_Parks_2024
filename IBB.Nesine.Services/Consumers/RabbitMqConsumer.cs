@@ -1,17 +1,13 @@
-﻿using IBB.Nesine.Data;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Text;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace IBB.Nesine.Services.Consumers
 {
-    public class RabbitMqConsumer 
+    public class RabbitMqConsumer
     {
         private IConnection _connection;
         private readonly string _hostName = "localhost";
