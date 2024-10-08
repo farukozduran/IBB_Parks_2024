@@ -1,4 +1,5 @@
 ﻿using IBB.Nesine.Caching.Interfaces;
+using IBB.Nesine.Data;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace IBB.Nesine.Caching.Providers

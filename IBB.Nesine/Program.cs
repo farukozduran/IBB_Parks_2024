@@ -71,6 +71,7 @@ builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<IDbProvider, DbProvider>();
 builder.Services.AddSingleton<IJob, UpdateAvailableParksInfoJob>();
 builder.Services.AddSingleton<RedisHelper>();
+builder.Services.AddSingleton<MemCacheHelper>();
 builder.Services.AddSingleton<RabbitMqProducer>();
 builder.Services.AddSingleton<RabbitMqConsumer>();
 builder.Services.AddSingleton<UpdateParksInfoConsumer>();

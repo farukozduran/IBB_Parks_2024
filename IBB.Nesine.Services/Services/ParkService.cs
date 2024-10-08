@@ -24,6 +24,7 @@ namespace IBB.Nesine.Services.Services
         private readonly ILogger<ParkService> _logger;
         private readonly RedisHelper _redisHelper;
         private readonly RabbitMqProducer _rabbitMqProducer;
+        private readonly MemCacheHelper _memCacheHelper;
 
         public ParkService
             (
@@ -32,6 +33,7 @@ namespace IBB.Nesine.Services.Services
             , ILogger<ParkService> logger
             , RedisHelper redisHelper
             , RabbitMqProducer rabbitMqProducer
+            , MemCacheHelper memCacheHelper
             )
         {
             _apiServiceHelper = apiServiceHelper;
@@ -40,10 +42,12 @@ namespace IBB.Nesine.Services.Services
             _logger = logger;
             _redisHelper = redisHelper;
             _rabbitMqProducer = rabbitMqProducer;
+            _memCacheHelper = memCacheHelper;
         }
         public IEnumerable<GetParksByDistrictResponseModel> GetParksByDistrict(string district)
         {
             string _cacheKey = $"parksByDistrict_{district}", spName = "[dbo].[usp_GetParkByDistrict]";
+            //return _memCacheHelper.GetData<GetParksByDistrictResponseModel>(_cacheKey, TimeSpan.FromMinutes(10), spName, new { District = district});
             return _redisHelper.GetData<GetParksByDistrictResponseModel>(_cacheKey, TimeSpan.FromMinutes(30), spName, new { District = district });
         }
         public bool GetParkAvailabilityByParkId(int parkId)
