@@ -1,6 +1,4 @@
 ﻿using IBB.Nesine.Caching.Providers;
-using IBB.Nesine.Data;
-using IBB.Nesine.Services.Consumers;
 using IBB.Nesine.Services.Helpers;
 using IBB.Nesine.Services.Interfaces;
 using IBB.Nesine.Services.Models;
@@ -24,7 +22,7 @@ namespace IBB.Nesine.Services.Services
         private readonly ILogger<ParkService> _logger;
         private readonly RedisHelper _redisHelper;
         private readonly RabbitMqProducer _rabbitMqProducer;
-        private readonly MemCacheHelper _memCacheHelper;
+        //private readonly MemCacheHelper _memCacheHelper;
 
         public ParkService
             (
@@ -33,7 +31,7 @@ namespace IBB.Nesine.Services.Services
             , ILogger<ParkService> logger
             , RedisHelper redisHelper
             , RabbitMqProducer rabbitMqProducer
-            , MemCacheHelper memCacheHelper
+            //, MemCacheHelper memCacheHelper
             )
         {
             _apiServiceHelper = apiServiceHelper;
@@ -42,7 +40,7 @@ namespace IBB.Nesine.Services.Services
             _logger = logger;
             _redisHelper = redisHelper;
             _rabbitMqProducer = rabbitMqProducer;
-            _memCacheHelper = memCacheHelper;
+            //_memCacheHelper = memCacheHelper;
         }
         public IEnumerable<GetParksByDistrictResponseModel> GetParksByDistrict(string district)
         {
@@ -53,6 +51,7 @@ namespace IBB.Nesine.Services.Services
         public bool GetParkAvailabilityByParkId(int parkId)
         {
             string _cacheKey = $"parkAvailabilityByParkId_{parkId}", spName = "usp_GetParkAvailabilityById";
+            //var availabilityModels = _memCacheHelper.GetData<GetParkAvailabilityModel>(_cacheKey, TimeSpan.FromMinutes(30), spName, new { ParkId = parkId });
             var availabilityModels = _redisHelper.GetData<GetParkAvailabilityModel>(_cacheKey, TimeSpan.FromMinutes(30), spName, new { ParkId = parkId });
             return availabilityModels.FirstOrDefault().IsAvailable;
         }

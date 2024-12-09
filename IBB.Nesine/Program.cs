@@ -71,11 +71,13 @@ builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<IDbProvider, DbProvider>();
 builder.Services.AddSingleton<IJob, UpdateAvailableParksInfoJob>();
 builder.Services.AddSingleton<RedisHelper>();
-builder.Services.AddSingleton<MemCacheHelper>();
+//builder.Services.AddSingleton<MemCacheHelper>();
 builder.Services.AddSingleton<RabbitMqProducer>();
 builder.Services.AddSingleton<RabbitMqConsumer>();
 builder.Services.AddSingleton<UpdateParksInfoConsumer>();
 builder.Services.AddSingleton<UpdateAvailableParksInfoJobConsumer>();
+
+
 
 if (cacheSettings.IsRedisEnabled)
 {
@@ -142,6 +144,7 @@ var app = builder.Build();
 
 var scope = app.Services.CreateScope();
 scope.ServiceProvider.GetRequiredService<UpdateAvailableParksInfoJobConsumer>();
+scope.ServiceProvider.GetRequiredService<UpdateParksInfoConsumer>();
 
 if (app.Environment.IsDevelopment())
 {
