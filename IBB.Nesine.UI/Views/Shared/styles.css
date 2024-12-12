@@ -1,0 +1,27 @@
+﻿#parksByDistrictTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+}
+
+    #parksByDistrictTable th, #parksByDistrictTable td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    #parksByDistrictTable th {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    #parksByDistrictTable tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    #parksByDistrictTable td {
+        font-size: 14px;
+    }
+
+/* Diğer stil kodları */

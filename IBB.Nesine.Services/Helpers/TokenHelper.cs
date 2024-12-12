@@ -19,7 +19,6 @@ namespace IBB.Nesine.Services.Helpers
         }
         public string GetJwtToken(UserModel user)
         {
-            // Kullanıcı taleplerini (claims) oluştur
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),

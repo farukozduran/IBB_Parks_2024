@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IBB.Nesine.Services", "IBB.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IBB.Nesine.Data", "IBB.Nesine.Data\IBB.Nesine.Data.csproj", "{07F65D68-DD4D-4D6B-92E1-FE62D1625C2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IBB.Nesine.Caching", "IBB.Nesine.Caching\IBB.Nesine.Caching.csproj", "{50303A52-E01D-40F6-9A68-A7059F3D66E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IBB.Nesine.Caching", "IBB.Nesine.Caching\IBB.Nesine.Caching.csproj", "{50303A52-E01D-40F6-9A68-A7059F3D66E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IBB.Nesine.UI", "IBB.Nesine.UI\IBB.Nesine.UI.csproj", "{BF1074B4-5C8D-4C96-998B-C7D0346362CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{50303A52-E01D-40F6-9A68-A7059F3D66E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50303A52-E01D-40F6-9A68-A7059F3D66E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50303A52-E01D-40F6-9A68-A7059F3D66E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF1074B4-5C8D-4C96-998B-C7D0346362CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF1074B4-5C8D-4C96-998B-C7D0346362CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF1074B4-5C8D-4C96-998B-C7D0346362CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF1074B4-5C8D-4C96-998B-C7D0346362CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
