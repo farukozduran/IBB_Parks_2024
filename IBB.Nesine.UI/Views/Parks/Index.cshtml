@@ -1,0 +1,118 @@
+﻿@model List<IBB.Nesine.Services.Models.Park>
+@{
+	ViewData["Title"] = "Park Servisleri";
+}
+
+
+<h1>Park Servisleri</h1>
+
+<!-- Update Parks Info -->
+<div>
+	<h5 class="text-primary">Park Bilgilerini Güncelle</h5>
+	<button id="updateParksBtn" class="btn btn-sm btn-success">Parkları Güncelle</button>
+	<p id="updateParksMessage"></p>
+</div>
+
+<!-- Get Parks By District -->
+<div>
+	<h5 class="text-primary">İlçeye Göre Park Listesi</h5>
+	<form id="getParksByDistrictForm">
+		<div class="form-floating mb-3">
+			<input type="text" class="form-control-sm "id="district" placeholder="İlçe" />
+		</div>
+		
+		<button type="submit" class="btn btn-sm btn-success">Park Ara</button>
+	</form>
+	<table class="table table-bordered table-hover table-light" id="parksByDistrictTable" style="display: none;">
+		<thead>
+			<tr>
+				<th>Park ID</th>
+				<th>Park İsmi</th>
+				<th>Kapasite</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+</div>
+
+<!-- Get Park Availability By ParkId -->
+<div>
+	<h5 class="text-primary">ParkId ile Park Uygunluğu Bul</h5>
+	<form id="getParkAvailabilityForm">
+		<div class="form-floating mb-3">
+			<input type="number" class="form-control-sm" id="parkId" placeholder="ParkId" />
+		</div>
+		<button type="submit" class="btn btn-sm btn-success">Uygunluğu Kontrol Et!</button>
+	</form>
+	<p id="parkAvailabilityMessage"></p>
+</div>
+
+@section Scripts {
+	<script>
+		// Update Parks Info
+		document.getElementById('updateParksBtn').addEventListener('click', async () => {
+			const response = await fetch('/Parks/UpdateParksInfo', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+			const result = await response.json();
+			document.getElementById('updateParksMessage').innerText = result.success
+				? 'Park bilgileri güncellendi!'
+				: 'Park bilgileri güncellenirken bir hata oluştu!';
+		});
+
+		// Get Parks By District
+		document.getElementById('getParksByDistrictForm').addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const district = document.getElementById('district').value;
+			const response = await fetch(`/Parks/GetParksByDistrict?district=${district}`);
+			const data = await response.json();
+			console.log(data);
+			const tableBody = document.querySelector('#parksByDistrictTable tbody');
+			tableBody.innerHTML = '';
+			data.forEach(park => {
+				const row = `<tr>
+							<td>${park.parkId}</td>
+									<td>${park.parkName}</td>
+									<td>${park.capacity}</td>
+		@*<td>${park.emptyCapacity}</td>
+								<td>${park.workHours}</td>
+								<td>${park.parkType}</td>
+								<td>${park.freeTime}</td>
+								<td>${park.district}</td>
+								<td>${park.isOpen}</td>*@
+						</tr>`;
+				tableBody.innerHTML += row;
+			});
+			document.getElementById('parksByDistrictTable').style.display = data.length ? 'table' : 'none';
+		});
+
+		// Get Park Availability By ParkId
+		document.getElementById('getParkAvailabilityForm').addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const token = localStorage.getItem('jwtToken');
+			const parkId = document.getElementById('parkId').value;
+			const response = await fetch(`/Parks/GetParkAvailabilityByParkId?parkId=${parkId}`,{
+				method: 'GET',
+				headers: {
+					'Authorization': 'Bearer ${token}',
+					'Content-Type': 'application/json',
+				},
+			});
+			// if (response.ok) {
+			// 	const data = await response.json();
+			// 	console.log(data);
+			// } else {
+			// 	console.error('Error:', response.statusText);
+			// }
+			const result = await response.json();
+			console.log(result);
+			document.getElementById('parkAvailabilityMessage').innerText = result.isAvailable
+				? 'Park uygun'
+				: 'Park uygun değil.';
+		});
+	</script>
+}

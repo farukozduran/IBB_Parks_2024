@@ -1,0 +1,62 @@
+﻿@model List<IBB.Nesine.Services.Models.Park>
+
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Park Listesi</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="tableInfo">
+    <p>Tabloda <span id="rowCount"></span> adet park bulunmaktadır.</p>
+</div>
+<table class="table table-bordered table-hover table-light">
+    <thead>
+        <tr>
+            <th>Park ID</th>
+            <th>Park Adı</th>
+            <th>Lat</th>
+            <th>Lng</th>
+            <th>Capacity</th>
+            <th>EmptyCapacity</th>
+            <th>WorkHours</th>
+            <th>ParkType</th>
+            <th>FreeTime</th>
+            <th>District</th>
+            <th>IsOpen</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var park in Model)
+        {
+            <tr>
+                <td>@park.ParkId</td>
+                <td>@park.ParkName</td>
+                <td>@park.Lat</td>
+                <td>@park.Lng</td>
+                <td>@park.Capacity</td>
+                <td>@park.EmptyCapacity</td>
+                <td>@park.WorkHours</td>
+                <td>@park.ParkType</td>
+                <td>@park.FreeTime</td>
+                <td>@park.District</td>
+                <td>@park.IsOpen</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+    <script>
+        // Tabloyu seçiyoruz
+        const table = document.querySelector('.table tbody');
+
+        // Satır sayısını hesaplıyoruz
+        const rowCount = table.rows.length;
+
+        // Satır sayısını HTML'deki ilgili alana yazdırıyoruz
+        document.getElementById('rowCount').innerText = rowCount;
+    </script>
+
+</body>
+</html>
